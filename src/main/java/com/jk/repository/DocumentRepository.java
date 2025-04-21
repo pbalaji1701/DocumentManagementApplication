@@ -19,7 +19,7 @@ public interface DocumentRepository {
     
     List<Document> findByDocumentType(String documentType);
 
-	Page<Document> findAll(PageRequest of);
+	Page<Document> findAll(PageRequest pageRequest);
 
 	Document save(Document document);
 

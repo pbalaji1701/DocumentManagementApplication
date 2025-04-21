@@ -26,7 +26,7 @@ public class DocumentService {
     
     @Async
     @Transactional
-    public CompletableFuture<Object> ingestDocument(Document document) {
+    public CompletableFuture<Document> ingestDocument(Document document) {
     	return CompletableFuture.supplyAsync(() -> {
             try {
                 // Validate document
