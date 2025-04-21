@@ -21,6 +21,6 @@ public interface DocumentRepository {
 
 	Page<Document> findAll(PageRequest of);
 
-	Object save(Document document);
+	Document save(Document document);
 
 }

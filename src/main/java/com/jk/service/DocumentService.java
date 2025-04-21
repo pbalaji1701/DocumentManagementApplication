@@ -27,9 +27,30 @@ public class DocumentService {
     @Async
     @Transactional
     public CompletableFuture<Object> ingestDocument(Document document) {
-        // Simulate document processing
-        document.setSearchVector(generateSearchVector(document.getContent()));
-        return CompletableFuture.completedFuture(documentRepository.save(document));
+    	return CompletableFuture.supplyAsync(() -> {
+            try {
+                // Validate document
+                if (document == null || document.getContent() == null || document.getContent().isBlank()) {
+                    throw new IllegalArgumentException("Document or its content cannot be null or empty");
+                }
+
+                // Normalize content (e.g., trim, lowercase, remove special characters)
+                String normalizedContent = normalizeContent(document.getContent());
+                document.setContent(normalizedContent);
+
+                // Simulate processing delay (e.g., mimicking text analysis or API calls)
+                simulateProcessingDelay();
+
+                // Generate search vector (assumed to be a method that creates a vector for search)
+                document.setSearchVector(generateSearchVector(normalizedContent));
+
+                // Save the processed document
+                return documentRepository.save(document);
+            } catch (Exception e) {
+                // Wrap and propagate any errors in the CompletableFuture
+                throw new RuntimeException("Failed to process document: " + e.getMessage(), e);
+            }
+        });
     }
     
     @Async
@@ -44,5 +65,22 @@ public class DocumentService {
     private String generateSearchVector(String content) {
         // Implement tsvector generation logic
         return content;
+    }
+    
+    private String normalizeContent(String content) {
+        // Trim whitespace, convert to lowercase, and remove special characters
+        return content.trim()
+                     .toLowerCase()
+                     .replaceAll("[^a-zA-Z0-9\\s]", "");
+    }
+    
+    private void simulateProcessingDelay() {
+        try {
+            // Simulate a delay between 100-500ms to mimic real processing
+            Thread.sleep(100 + (long) (Math.random() * 400));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Processing interrupted", e);
+        }
     }
 }
